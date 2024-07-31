@@ -93,7 +93,7 @@ public class TestLexer {
     }
 
     @Test
-    public void TestNextTokenGarbled() {
+    public void TestNextTokenGarbledInput() {
         String input =
         """
         let five = 5 ;

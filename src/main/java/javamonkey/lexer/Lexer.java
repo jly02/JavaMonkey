@@ -32,11 +32,17 @@ public class Lexer {
         String lit = Character.toString(ch);
         Token tok = switch (ch) {
             case '=' -> new Token(Token.ASSIGN, lit);
+            case '+' -> new Token(Token.PLUS, lit);
+            case '-' -> new Token(Token.MINUS, lit);
+            case '!' -> new Token(Token.BANG, lit);
+            case '/' -> new Token(Token.SLASH, lit);
+            case '*' -> new Token(Token.ASTERISK, lit);
+            case '<' -> new Token(Token.LT, lit);
+            case '>' -> new Token(Token.GT, lit);
             case ';' -> new Token(Token.SEMICOLON, lit);
             case '(' -> new Token(Token.LPAREN, lit);
             case ')' -> new Token(Token.RPAREN, lit);
             case ',' -> new Token(Token.COMMA, lit);
-            case '+' -> new Token(Token.PLUS, lit);
             case '{' -> new Token(Token.LBRACE, lit);
             case '}' -> new Token(Token.RBRACE, lit);
             case 0 -> new Token(Token.EOF, "");
@@ -56,8 +62,7 @@ public class Lexer {
             }
         };
 
-        // continue to the next char if a number or identifier was
-        // not just read
+        // do not advance lexer if just read identifier or number
         if (!numOrIdent) this.readChar();
         return tok;
     }
