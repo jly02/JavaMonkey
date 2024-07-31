@@ -12,8 +12,15 @@ public class Token {
     public static final String INT   = "INT";
 
     // Operators
-    public static final String ASSIGN = "=";
-    public static final String PLUS   = "+";
+    public static final String ASSIGN   = "=";
+    public static final String PLUS     = "+";
+    public static final String MINUS    = "-";
+    public static final String BANG     = "!";
+    public static final String ASTERISK = "*";
+    public static final String SLASH    = "/";
+
+    public static final String LT = "<";
+    public static final String GT = ">";
 
     // Delimiters
     public static final String COMMA     = ",";
