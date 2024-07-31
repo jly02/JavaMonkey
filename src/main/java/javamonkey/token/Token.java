@@ -26,8 +26,12 @@ public class Token {
     public static final String FUNCTION = "FUNCTION";
     public static final String LET      = "LET";
 
-    String type;
-    String literal;
+    // Class fields
+    public String type;
+    public String literal;
 
-
+    public Token(String type, String literal) {
+        this.type = type;
+        this.literal = literal;
+    }
 }
