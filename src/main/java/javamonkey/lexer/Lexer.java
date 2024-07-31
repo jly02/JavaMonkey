@@ -31,10 +31,28 @@ public class Lexer {
         boolean numOrIdent = false;
         String lit = Character.toString(ch);
         Token tok = switch (ch) {
-            case '=' -> new Token(Token.ASSIGN, lit);
+            case '=' -> {
+                if (this.peekChar() == '=') {
+                    char ch = this.ch;
+                    this.readChar();
+                    lit = Character.toString(ch) + Character.toString(this.ch);
+                    yield new Token(Token.EQ, lit);
+                } else {
+                    yield new Token(Token.ASSIGN, lit);
+                }
+            }
+            case '!' -> {
+                if (this.peekChar() == '=') {
+                    char ch = this.ch;
+                    this.readChar();
+                    lit = Character.toString(ch) + Character.toString(this.ch);
+                    yield new Token(Token.NOT_EQ, lit);
+                } else {
+                    yield new Token(Token.BANG, lit);
+                }
+            }
             case '+' -> new Token(Token.PLUS, lit);
             case '-' -> new Token(Token.MINUS, lit);
-            case '!' -> new Token(Token.BANG, lit);
             case '/' -> new Token(Token.SLASH, lit);
             case '*' -> new Token(Token.ASTERISK, lit);
             case '<' -> new Token(Token.LT, lit);
@@ -78,6 +96,16 @@ public class Lexer {
 
         this.position = readPosition;
         this.readPosition++;
+    }
+
+    // Helper method for reading the next character
+    // without advancing the lexer.
+    private char peekChar() {
+        if (readPosition >= input.length()) {
+            return 0;
+        } else {
+            return input.charAt(readPosition);
+        }
     }
 
     // Helper method for reading general identifiers.

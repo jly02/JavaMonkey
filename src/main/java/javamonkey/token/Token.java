@@ -22,6 +22,9 @@ public class Token {
     public static final String LT = "<";
     public static final String GT = ">";
 
+    public static final String EQ     = "==";
+    public static final String NOT_EQ = "!=";
+
     // Delimiters
     public static final String COMMA     = ",";
     public static final String SEMICOLON = ";";
@@ -34,11 +37,21 @@ public class Token {
     // Keywords
     public static final String FUNCTION = "FUNCTION";
     public static final String LET      = "LET";
+    public static final String TRUE     = "TRUE";
+    public static final String FALSE    = "FALSE";
+    public static final String IF       = "IF";
+    public static final String ELSE     = "ELSE";
+    public static final String RETURN   = "RETURN";
 
     // Special keyword dictionary
     public static final Map<String, String> KEYWORDS = Map.ofEntries(
         Map.entry("fn",  FUNCTION),
-        Map.entry("let", LET)
+        Map.entry("let", LET),
+        Map.entry("true", TRUE),
+        Map.entry("false", FALSE),
+        Map.entry("if", IF),
+        Map.entry("else", ELSE),
+        Map.entry("return", RETURN)
     );
 
     // Class fields
