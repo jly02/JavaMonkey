@@ -33,9 +33,9 @@ public class Lexer {
         Token tok = switch (ch) {
             case '=' -> {
                 if (this.peekChar() == '=') {
-                    char ch = this.ch;
+                    char chr = this.ch;
                     this.readChar();
-                    lit = Character.toString(ch) + Character.toString(this.ch);
+                    lit = Character.toString(chr) + Character.toString(this.ch);
                     yield new Token(Token.EQ, lit);
                 } else {
                     yield new Token(Token.ASSIGN, lit);
@@ -43,9 +43,9 @@ public class Lexer {
             }
             case '!' -> {
                 if (this.peekChar() == '=') {
-                    char ch = this.ch;
+                    char chr = this.ch;
                     this.readChar();
-                    lit = Character.toString(ch) + Character.toString(this.ch);
+                    lit = Character.toString(chr) + Character.toString(this.ch);
                     yield new Token(Token.NOT_EQ, lit);
                 } else {
                     yield new Token(Token.BANG, lit);
