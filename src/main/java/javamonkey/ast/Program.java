@@ -1,7 +1,7 @@
 package javamonkey.ast;
 
 public class Program {
-    Statement[] statements;
+    public Statement[] statements;
 
     public String tokenLiteral() {
         if (this.statements.length > 0) {

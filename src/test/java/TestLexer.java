@@ -1,4 +1,4 @@
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import javamonkey.lexer.Lexer;
@@ -24,8 +24,8 @@ public class TestLexer {
 
         for (Token token : expected) {
             Token next = l.nextToken();
-            Assert.assertEquals(token.type, next.type);
-            Assert.assertEquals(token.literal, next.literal);
+            assertEquals(token.type, next.type);
+            assertEquals(token.literal, next.literal);
         }
     }
 
@@ -87,8 +87,8 @@ public class TestLexer {
 
         for (Token token : expected) {
             Token next = l.nextToken();
-            Assert.assertEquals(token.type, next.type);
-            Assert.assertEquals(token.literal, next.literal);
+            assertEquals(token.type, next.type);
+            assertEquals(token.literal, next.literal);
         }
     }
 
@@ -162,8 +162,8 @@ public class TestLexer {
 
         for (Token token : expected) {
             Token next = l.nextToken();
-            Assert.assertEquals(token.type, next.type);
-            Assert.assertEquals(token.literal, next.literal);
+            assertEquals(token.type, next.type);
+            assertEquals(token.literal, next.literal);
         }
     }
 
@@ -269,8 +269,8 @@ public class TestLexer {
 
         for (Token token : expected) {
             Token next = l.nextToken();
-            Assert.assertEquals(token.type, next.type);
-            Assert.assertEquals(token.literal, next.literal);
+            assertEquals(token.type, next.type);
+            assertEquals(token.literal, next.literal);
         }
     }
 }
