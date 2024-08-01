@@ -21,6 +21,7 @@ public class Parser {
     }
 
     public Program parse() {
+        Program p = new Program();
         return null;
     }
 }

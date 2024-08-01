@@ -1,11 +1,13 @@
 package javamonkey.ast;
 
+import java.util.ArrayList;
+
 public class Program {
-    public Statement[] statements;
+    public ArrayList<Statement> statements;
 
     public String tokenLiteral() {
-        if (this.statements.length > 0) {
-            return this.statements[0].tokenLiteral();
+        if (!this.statements.isEmpty()) {
+            return this.statements.get(0).tokenLiteral();
         } else {
             return "";
         }

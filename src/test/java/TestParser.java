@@ -26,11 +26,11 @@ public class TestParser {
 
         // Check basic properties are met.
         assertNotNull(program);
-        assertEquals(3, program.statements.length);
+        assertEquals(3, program.statements.size());
 
         String[] expectedIdent = {"x", "y", "foobar"};
         for (int i = 0; i < expectedIdent.length; i++) {
-            Statement stmt = program.statements[i];
+            Statement stmt = program.statements.get(i);
             String ident = expectedIdent[i];
             testLetStatement(stmt, ident);
         }
