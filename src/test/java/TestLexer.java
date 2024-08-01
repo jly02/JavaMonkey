@@ -6,7 +6,7 @@ import javamonkey.token.Token;
 
 public class TestLexer {
     @Test
-    public void TestNextToken() {
+    public void testNextToken() {
         String input = "=+(){},;";
         Lexer l = new Lexer(input);
 
@@ -30,7 +30,7 @@ public class TestLexer {
     }
 
     @Test 
-    public void TestNextTokenLargerInput() {
+    public void testNextTokenLargerInput() {
         String input =
         """
         let five = 5 ;
@@ -93,7 +93,7 @@ public class TestLexer {
     }
 
     @Test
-    public void TestNextTokenGarbledInput() {
+    public void testNextTokenGarbledInput() {
         String input =
         """
         let five = 5 ;
@@ -168,7 +168,7 @@ public class TestLexer {
     }
 
     @Test
-    public void TestNextTokenControlFlow() {
+    public void testNextTokenControlFlow() {
         String input =
         """
         let five = 5 ;
