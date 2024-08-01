@@ -32,6 +32,7 @@ public class Lexer {
         String lit = Character.toString(ch);
         Token tok = switch (ch) {
             case '=' -> {
+                // check if just '=' or '=='
                 if (this.peekChar() == '=') {
                     char chr = this.ch;
                     this.readChar();
@@ -42,6 +43,7 @@ public class Lexer {
                 }
             }
             case '!' -> {
+                // check if just '!' or '!='
                 if (this.peekChar() == '=') {
                     char chr = this.ch;
                     this.readChar();
