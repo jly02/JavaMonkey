@@ -1,9 +1,9 @@
 package javamonkey.ast;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Program {
-    public ArrayList<Statement> statements;
+    public List<Statement> statements;
 
     public String tokenLiteral() {
         if (!this.statements.isEmpty()) {

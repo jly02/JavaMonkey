@@ -1,7 +1,10 @@
 package javamonkey.parser;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import javamonkey.ast.Identifier;
+import javamonkey.ast.LetStatement;
 import javamonkey.ast.Program;
 import javamonkey.ast.Statement;
 import javamonkey.lexer.Lexer;
@@ -11,6 +14,7 @@ public class Parser {
     public Lexer l;
     public Token curToken;
     public Token peekToken;
+    public List<String> errors;
 
     public Parser(Lexer l) {
         this.l = l;
@@ -32,7 +36,7 @@ public class Parser {
         Program p = new Program();
         p.statements = new ArrayList<>();
 
-        while (!this.curToken.type.equals(Token.EOF)) {
+        while (!this.curTokenIs(Token.EOF)) {
             Statement stmt = this.parseStatement();
             if (stmt != null) {
                 p.statements.add(stmt);
@@ -54,7 +58,46 @@ public class Parser {
 
     // Helper method to parse let statements.
     private Statement parseLetStatement() {
-        // TODO: implement this method (bottom p. 40)
-        return null;
+        LetStatement stmt = new LetStatement(this.curToken, null, null);
+
+        if (!this.expectPeek(Token.IDENT)) {
+            return null;
+        }
+
+        stmt.name = new Identifier(this.curToken, this.curToken.literal);
+
+        if (!this.expectPeek(Token.ASSIGN)) {
+            return null;
+        }
+
+        // TODO: For now, skipping expressions until reaching semicolon.
+        while (!this.curTokenIs(Token.SEMICOLON)) {
+            this.nextToken();
+        }
+
+        return stmt;
+    }
+
+    // Helper method that simplifies long .equals() function call.
+    // Checks that the current token is type t.
+    private boolean curTokenIs(String t) {
+        return this.curToken.type.equals(t);
+    }
+
+    // Helper method that simplifies long .equals() function call.
+    // Checks that the peek token is type t.
+    private boolean peekTokenIs(String t) {
+        return this.peekToken.type.equals(t);
+    }
+
+    // Helper method that advances the parser if the peek token 
+    // matches expected token type.
+    private boolean expectPeek(String t) {
+        if (this.peekTokenIs(t)) {
+            this.nextToken();
+            return true;
+        } else {
+            return false;
+        }
     }
 }
