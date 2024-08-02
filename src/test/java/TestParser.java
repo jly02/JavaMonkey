@@ -1,7 +1,10 @@
+import java.util.List;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 
 import javamonkey.ast.LetStatement;
@@ -23,6 +26,7 @@ public class TestParser {
         Lexer l = new Lexer(input);
         Parser p = new Parser(l);
         Program program = p.parse();
+        checkParserErrors(p);
 
         // Check basic properties are met.
         assertNotNull(program);
@@ -36,6 +40,21 @@ public class TestParser {
         }
     }
 
+    @Test
+    public void TestLetStatementsParseErrors() {
+        String input =
+        """
+        let x 5;
+        let = 10;
+        let 838383;
+        """;
+
+        Lexer l = new Lexer(input);
+        Parser p = new Parser(l);
+        p.parse();
+        assertEquals(3, p.errors().size());
+    }
+
     private void testLetStatement(Statement stmt, String ident) {
         assertEquals("s is not 'let', got " + stmt.tokenLiteral(), stmt.tokenLiteral(), "let");
 
@@ -45,5 +64,19 @@ public class TestParser {
         assertEquals(ident, letStmt.name.value);
 
         assertEquals(ident, letStmt.name.tokenLiteral());
+    }
+
+    private void checkParserErrors(Parser p) {
+        List<String> errors = p.errors();
+        if (errors.isEmpty()) {
+            return;
+        }
+
+        System.err.println("Parser has " + errors.size() + " errors.");
+        for (String msg : errors) {
+            System.err.println(msg);
+        }
+
+        fail();
     }
 }

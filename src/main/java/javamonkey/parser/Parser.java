@@ -14,12 +14,13 @@ public class Parser {
     public Lexer l;
     public Token curToken;
     public Token peekToken;
-    public List<String> errors;
+    private final List<String> errors;
 
     public Parser(Lexer l) {
         this.l = l;
         this.nextToken();
         this.nextToken();
+        this.errors = new ArrayList<>();
     }
 
     public final void nextToken() {
@@ -46,6 +47,21 @@ public class Parser {
         }
 
         return p;
+    }
+
+    /**
+     * Provides a list of errors that have occured during parsing.
+     * 
+     * @return a list containing all errors messages accumulated by the parser
+     */
+    public List<String> errors() {
+        return this.errors;
+    }
+
+    // Helper method for adding peek-related errors to the parser errors.
+    private void peekError(String t) {
+        String msg = "expected token <" + t + "> but got <" + this.peekToken.type + ">";
+        this.errors.add(msg);
     }
 
     // Helper method to parse statements.
@@ -97,6 +113,7 @@ public class Parser {
             this.nextToken();
             return true;
         } else {
+            this.peekError(t);
             return false;
         }
     }
