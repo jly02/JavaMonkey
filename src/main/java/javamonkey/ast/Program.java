@@ -12,4 +12,15 @@ public class Program {
             return "";
         }
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        
+        for (Statement stmt : this.statements) {
+            sb.append(stmt.toString());
+        }
+
+        return sb.toString();
+    }
 }

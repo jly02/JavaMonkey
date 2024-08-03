@@ -18,4 +18,9 @@ public class Identifier implements Expression {
 
     @Override
     public void expressionNode() { }
+
+    @Override
+    public String toString() {
+        return this.value;
+    }
 }

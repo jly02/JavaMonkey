@@ -18,4 +18,19 @@ public class ReturnStatement implements Statement {
 
     @Override
     public void statementNode() { }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(this.tokenLiteral())
+          .append(" ");
+
+        if (this.returnValue != null) {
+            sb.append(this.returnValue.toString());
+        }
+
+        sb.append(";");
+        return sb.toString();
+    }
 }

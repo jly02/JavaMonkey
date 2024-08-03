@@ -20,4 +20,21 @@ public class LetStatement implements Statement {
 
     @Override
     public void statementNode() { }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(this.tokenLiteral())
+          .append(" ")
+          .append(this.name.toString())
+          .append(" = ");
+
+        if (this.value != null) {
+            sb.append(this.value.toString());
+        }
+
+        sb.append(";");
+        return sb.toString();
+    }
 }
