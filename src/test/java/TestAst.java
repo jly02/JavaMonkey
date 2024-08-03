@@ -8,7 +8,7 @@ import javamonkey.ast.LetStatement;
 import javamonkey.ast.Program;
 import javamonkey.token.Token;
 
-public class TestAST {
+public class TestAst {
     @Test
     public void testString() {
         Program prog = new Program();
