@@ -6,6 +6,11 @@ public class ExpressionStatement implements Statement {
     public Token token;
     public Expression expr;
 
+    public ExpressionStatement(Token token, Expression expr) {
+        this.token = token;
+        this.expr = expr;
+    }
+
     @Override
     public String tokenLiteral() {
         return this.token.literal;

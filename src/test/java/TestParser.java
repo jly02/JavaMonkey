@@ -7,6 +7,9 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import org.junit.Test;
 
+import javamonkey.ast.Expression;
+import javamonkey.ast.ExpressionStatement;
+import javamonkey.ast.Identifier;
 import javamonkey.ast.LetStatement;
 import javamonkey.ast.Program;
 import javamonkey.ast.ReturnStatement;
@@ -78,6 +81,32 @@ public class TestParser {
             assertThat(stmt, instanceOf(ReturnStatement.class));
             assertEquals("return", stmt.tokenLiteral());
         }
+    }
+
+    @Test
+    public void testIdentifierExpression() {
+        String input = "foobar";
+
+        Lexer l = new Lexer(input);
+        Parser p = new Parser(l);
+        Program program = p.parse();
+        checkParserErrors(p);
+
+        // Check basic properties are met.
+        assertNotNull(program);
+        assertEquals(1, program.statements.size());
+
+        // Check node is an ExpressionStatement
+        assertThat(program.statements.get(0), instanceOf(ExpressionStatement.class));
+
+        // Check that the contained expression is an identifier
+        ExpressionStatement exprStmt = (ExpressionStatement) program.statements.get(0);
+        Expression expr = exprStmt.expr;
+        assertThat(expr, instanceOf(Identifier.class));
+
+        // Check that the identifier literal is correct
+        assertEquals("foobar", ((Identifier) expr).value);
+        assertEquals("foobar", expr.tokenLiteral());
     }
 
     private void testLetStatement(Statement stmt, String ident) {

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javamonkey.ast.Expression;
+import javamonkey.ast.ExpressionStatement;
 import javamonkey.ast.Identifier;
 import javamonkey.ast.LetStatement;
 import javamonkey.ast.Program;
@@ -15,6 +16,16 @@ import javamonkey.lexer.Lexer;
 import javamonkey.token.Token;
 
 public class Parser {
+    // Precedence constants
+    public static final int LOWEST = 1;
+    public static final int EQUALS = 2; // ==
+    public static final int LTGT   = 3; // < or >
+    public static final int SUM    = 4; // +
+    public static final int PROD   = 5; // *
+    public static final int PREFIX = 6; // -x or !x
+    public static final int CALL   = 7; // foo(x)
+
+    // Class fields
     public Lexer l;
     public Token curToken;
     public Token peekToken;
@@ -34,6 +45,9 @@ public class Parser {
         this.errors = new ArrayList<>();
         this.prefixParseFns = new HashMap<>();
         this.infixParseFns = new HashMap<>();
+
+        // Register prefixes
+        this.registerPrefix(Token.IDENT, () -> { return this.parseIdentifier(); });
     }
 
     /**
@@ -85,12 +99,12 @@ public class Parser {
         return switch (this.curToken.type) {
             case Token.LET -> this.parseLetStatement();
             case Token.RETURN -> this.parseReturnStatement();
-            default -> null;
+            default -> this.parseExpressionStatement();
         };
     }
 
     // Helper method to parse let statements.
-    private Statement parseLetStatement() {
+    private LetStatement parseLetStatement() {
         LetStatement stmt = new LetStatement(this.curToken, null, null);
 
         if (!this.expectPeek(Token.IDENT)) {
@@ -112,8 +126,8 @@ public class Parser {
     }
 
     // Helper method to parse return statements.
-    private Statement parseReturnStatement() {
-        Statement stmt = new ReturnStatement(this.curToken, null);
+    private ReturnStatement parseReturnStatement() {
+        ReturnStatement stmt = new ReturnStatement(this.curToken, null);
 
         this.nextToken();
 
@@ -123,6 +137,35 @@ public class Parser {
         }
 
         return stmt;
+    }
+
+    // Helper method to parse expression statements.
+    private ExpressionStatement parseExpressionStatement() {
+        ExpressionStatement stmt = new ExpressionStatement(this.curToken, null);
+
+        stmt.expr = parseExpression(LOWEST);
+
+        if (this.peekTokenIs(Token.SEMICOLON)) {
+            this.nextToken();
+        }
+
+        return stmt;
+    }
+
+    // Helper method to parse expressions.
+    private Expression parseExpression(int precedence) {
+        PrefixParseFn prefix = this.prefixParseFns.getOrDefault(this.curToken.type, null);
+        if (prefix == null) {
+            return null;
+        }
+
+        Expression leftExpr = prefix.parse();
+        return leftExpr;
+    }
+
+    // Helper method to parse identifiers.
+    private Expression parseIdentifier() {
+        return new Identifier(this.curToken, this.curToken.literal);
     }
 
     // Helper method that simplifies long .equals() function call.
