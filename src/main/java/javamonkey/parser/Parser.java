@@ -1,8 +1,11 @@
 package javamonkey.parser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javamonkey.ast.Expression;
 import javamonkey.ast.Identifier;
 import javamonkey.ast.LetStatement;
 import javamonkey.ast.Program;
@@ -16,14 +19,26 @@ public class Parser {
     public Token curToken;
     public Token peekToken;
     private final List<String> errors;
+    private final Map<String, PrefixParseFn> prefixParseFns;
+    private final Map<String, InfixParseFn> infixParseFns;
 
+    /**
+     * Constructs a new parser object from a given lexer.
+     * 
+     * @param l the lexer (with input) to be parsed from
+     */
     public Parser(Lexer l) {
         this.l = l;
         this.nextToken();
         this.nextToken();
         this.errors = new ArrayList<>();
+        this.prefixParseFns = new HashMap<>();
+        this.infixParseFns = new HashMap<>();
     }
 
+    /**
+     * Advances the current and peek token.
+     */
     public final void nextToken() {
         this.curToken = this.peekToken;
         this.peekToken = this.l.nextToken();
@@ -133,4 +148,24 @@ public class Parser {
             return false;
         }
     }
+
+    // Helper method for registering a prefix token parser entry.
+    private void registerPrefix(String tokenType, PrefixParseFn fn) {
+        this.prefixParseFns.put(tokenType, fn);
+    }
+
+    // Helper method for registering an infix token parser entry.
+    private void registerInfix(String tokenType, InfixParseFn fn) {
+        this.infixParseFns.put(tokenType, fn);
+    }
+}
+
+@FunctionalInterface
+interface PrefixParseFn {
+    Expression parse();
+}
+
+@FunctionalInterface
+interface InfixParseFn {
+    Expression parse(Expression left);
 }
