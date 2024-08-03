@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import javamonkey.ast.LetStatement;
 import javamonkey.ast.Program;
+import javamonkey.ast.ReturnStatement;
 import javamonkey.ast.Statement;
 import javamonkey.lexer.Lexer;
 import javamonkey.parser.Parser;
@@ -53,6 +54,30 @@ public class TestParser {
         Parser p = new Parser(l);
         p.parse();
         assertEquals(3, p.errors().size());
+    }
+
+    @Test
+    public void testReturnStatement() {
+        String input =
+        """
+        return 5;
+        return 10;
+        return 993322;        
+        """;
+
+        Lexer l = new Lexer(input);
+        Parser p = new Parser(l);
+        Program program = p.parse();
+        checkParserErrors(p);
+
+        // Check basic properties are met.
+        assertNotNull(program);
+        assertEquals(3, program.statements.size());
+
+        for (Statement stmt : program.statements) {
+            assertThat(stmt, instanceOf(ReturnStatement.class));
+            assertEquals("return", stmt.tokenLiteral());
+        }
     }
 
     private void testLetStatement(Statement stmt, String ident) {

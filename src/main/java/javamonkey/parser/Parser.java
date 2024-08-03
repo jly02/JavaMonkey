@@ -6,6 +6,7 @@ import java.util.List;
 import javamonkey.ast.Identifier;
 import javamonkey.ast.LetStatement;
 import javamonkey.ast.Program;
+import javamonkey.ast.ReturnStatement;
 import javamonkey.ast.Statement;
 import javamonkey.lexer.Lexer;
 import javamonkey.token.Token;
@@ -68,6 +69,7 @@ public class Parser {
     private Statement parseStatement() {
         return switch (this.curToken.type) {
             case Token.LET -> this.parseLetStatement();
+            case Token.RETURN -> this.parseReturnStatement();
             default -> null;
         };
     }
@@ -85,6 +87,20 @@ public class Parser {
         if (!this.expectPeek(Token.ASSIGN)) {
             return null;
         }
+
+        // TODO: For now, skipping expressions until reaching semicolon.
+        while (!this.curTokenIs(Token.SEMICOLON)) {
+            this.nextToken();
+        }
+
+        return stmt;
+    }
+
+    // Helper method to parse return statements.
+    private Statement parseReturnStatement() {
+        Statement stmt = new ReturnStatement(this.curToken, null);
+
+        this.nextToken();
 
         // TODO: For now, skipping expressions until reaching semicolon.
         while (!this.curTokenIs(Token.SEMICOLON)) {
