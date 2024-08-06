@@ -12,6 +12,7 @@ import javamonkey.ast.ExpressionStatement;
 import javamonkey.ast.Identifier;
 import javamonkey.ast.IntegerLiteral;
 import javamonkey.ast.LetStatement;
+import javamonkey.ast.PrefixExpression;
 import javamonkey.ast.Program;
 import javamonkey.ast.ReturnStatement;
 import javamonkey.ast.Statement;
@@ -20,7 +21,7 @@ import javamonkey.parser.Parser;
 
 public class TestParser {
     @Test
-    public void TestLetStatements() {
+    public void testLetStatements() {
         String input =
         """
         let x = 5;
@@ -46,7 +47,7 @@ public class TestParser {
     }
 
     @Test
-    public void TestLetStatementsParseErrors() {
+    public void testLetStatementsParseErrors() {
         String input =
         """
         let x 5;
@@ -129,11 +130,39 @@ public class TestParser {
         // Check that the contained expression is an integer literal
         ExpressionStatement exprStmt = (ExpressionStatement) program.statements.get(0);
         Expression expr = exprStmt.expr;
-        assertThat(expr, instanceOf(IntegerLiteral.class));
+        testIntegerLiteral(expr, 5);
+    }
 
-        // Check that the integer literal is correct
-        assertEquals(5, ((IntegerLiteral) expr).value);
-        assertEquals("5", expr.tokenLiteral());
+    @Test
+    public void testPrefixExpression() {
+        PrefixTest[] tests = {
+            new PrefixTest("!5;", "!", 5),
+            new PrefixTest("-15;", "-", 15)
+        };
+
+        for (PrefixTest test : tests) {
+            Lexer l = new Lexer(test.input);
+            Parser p = new Parser(l);
+            Program program = p.parse();
+            checkParserErrors(p);
+
+            // Check basic properties are met.
+            assertNotNull(program);
+            assertEquals(1, program.statements.size());
+
+            // Check node is an ExpressionStatement
+            assertThat(program.statements.get(0), instanceOf(ExpressionStatement.class));
+
+            // Check that the contained expression is a prefix expression
+            ExpressionStatement exprStmt = (ExpressionStatement) program.statements.get(0);
+            Expression expr = exprStmt.expr;
+            assertThat(expr, instanceOf(PrefixExpression.class));
+
+            // Check that the integer literal is correct
+            PrefixExpression pe = (PrefixExpression) expr;
+            assertEquals(test.op, pe.op);
+            testIntegerLiteral(pe.right, test.value);
+        }
     }
 
     private void testLetStatement(Statement stmt, String ident) {
@@ -145,6 +174,15 @@ public class TestParser {
         assertEquals(ident, letStmt.name.value);
 
         assertEquals(ident, letStmt.name.tokenLiteral());
+    }
+
+    private void testIntegerLiteral(Expression expr, long value) {
+        assertThat(expr, instanceOf(IntegerLiteral.class));
+
+        IntegerLiteral lit = (IntegerLiteral) expr;
+        assertEquals(value, lit.value);
+
+        assertEquals(Long.toString(value), lit.tokenLiteral());
     }
 
     private void checkParserErrors(Parser p) {
@@ -159,5 +197,18 @@ public class TestParser {
         }
 
         fail();
+    }
+
+    // Helper class for organizing prefix expression tests
+    private static class PrefixTest {
+        public String input;
+        public String op;
+        public long value;
+
+        public PrefixTest(String input, String op, long value) {
+            this.input = input;
+            this.op = op;
+            this.value = value;
+        }
     }
 }

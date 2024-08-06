@@ -10,6 +10,7 @@ import javamonkey.ast.ExpressionStatement;
 import javamonkey.ast.Identifier;
 import javamonkey.ast.IntegerLiteral;
 import javamonkey.ast.LetStatement;
+import javamonkey.ast.PrefixExpression;
 import javamonkey.ast.Program;
 import javamonkey.ast.ReturnStatement;
 import javamonkey.ast.Statement;
@@ -50,6 +51,8 @@ public class Parser {
         // Register prefixes
         this.registerPrefix(Token.IDENT, () -> { return this.parseIdentifier(); });
         this.registerPrefix(Token.INT,   () -> { return this.parseIntegerLiteral(); });
+        this.registerPrefix(Token.BANG,  () -> { return this.parsePrefixExpression(); });
+        this.registerPrefix(Token.MINUS, () -> { return this.parsePrefixExpression(); });
     }
 
     /**
@@ -92,7 +95,13 @@ public class Parser {
 
     // Helper method for adding peek-related errors to the parser errors.
     private void peekError(String t) {
-        String msg = "expected token <" + t + "> but got <" + this.peekToken.type + ">";
+        String msg = "expected token type <" + t + "> but got <" + this.peekToken.type + ">";
+        this.errors.add(msg);
+    }
+
+    // Helper method for adding prefix parsing errors
+    private void noPrefixParseFnError(String t) {
+        String msg = "no prefix parse function for <" + t + "> found";
         this.errors.add(msg);
     }
 
@@ -158,6 +167,7 @@ public class Parser {
     private Expression parseExpression(int precedence) {
         PrefixParseFn prefix = this.prefixParseFns.getOrDefault(this.curToken.type, null);
         if (prefix == null) {
+            this.noPrefixParseFnError(this.curToken.type);
             return null;
         }
 
@@ -182,6 +192,18 @@ public class Parser {
         }
         
         return new IntegerLiteral(curToken, val);
+    }
+
+    // Helper method for parsing prefix expressions
+    private Expression parsePrefixExpression() {
+        Token tempToken = this.curToken;
+        this.nextToken();
+        Expression expr = new PrefixExpression(
+            tempToken, 
+            tempToken.literal, 
+            this.parseExpression(PREFIX)
+        );
+        return expr;
     }
 
     // Helper method that simplifies long .equals() function call.
