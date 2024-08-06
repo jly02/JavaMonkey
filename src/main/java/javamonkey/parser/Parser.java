@@ -8,6 +8,7 @@ import java.util.Map;
 import javamonkey.ast.Expression;
 import javamonkey.ast.ExpressionStatement;
 import javamonkey.ast.Identifier;
+import javamonkey.ast.IntegerLiteral;
 import javamonkey.ast.LetStatement;
 import javamonkey.ast.Program;
 import javamonkey.ast.ReturnStatement;
@@ -48,6 +49,7 @@ public class Parser {
 
         // Register prefixes
         this.registerPrefix(Token.IDENT, () -> { return this.parseIdentifier(); });
+        this.registerPrefix(Token.INT,   () -> { return this.parseIntegerLiteral(); });
     }
 
     /**
@@ -166,6 +168,20 @@ public class Parser {
     // Helper method to parse identifiers.
     private Expression parseIdentifier() {
         return new Identifier(this.curToken, this.curToken.literal);
+    }
+
+    // Helper method to parse integer literals
+    private Expression parseIntegerLiteral() {
+        long val;
+        try {
+            val = Long.parseLong(this.curToken.literal);
+        } catch (Exception e) {
+            String msg = "Could not parse <" + this.curToken.literal + "> as integer";
+            this.errors.add(msg);
+            return null;
+        }
+        
+        return new IntegerLiteral(curToken, val);
     }
 
     // Helper method that simplifies long .equals() function call.

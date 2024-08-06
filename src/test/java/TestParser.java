@@ -10,6 +10,7 @@ import org.junit.Test;
 import javamonkey.ast.Expression;
 import javamonkey.ast.ExpressionStatement;
 import javamonkey.ast.Identifier;
+import javamonkey.ast.IntegerLiteral;
 import javamonkey.ast.LetStatement;
 import javamonkey.ast.Program;
 import javamonkey.ast.ReturnStatement;
@@ -85,7 +86,7 @@ public class TestParser {
 
     @Test
     public void testIdentifierExpression() {
-        String input = "foobar";
+        String input = "foobar;";
 
         Lexer l = new Lexer(input);
         Parser p = new Parser(l);
@@ -107,6 +108,32 @@ public class TestParser {
         // Check that the identifier literal is correct
         assertEquals("foobar", ((Identifier) expr).value);
         assertEquals("foobar", expr.tokenLiteral());
+    }
+
+    @Test
+    public void testIntegerLiteralExpression() {
+        String input = "5;";
+
+        Lexer l = new Lexer(input);
+        Parser p = new Parser(l);
+        Program program = p.parse();
+        checkParserErrors(p);
+
+        // Check basic properties are met.
+        assertNotNull(program);
+        assertEquals(1, program.statements.size());
+
+        // Check node is an ExpressionStatement
+        assertThat(program.statements.get(0), instanceOf(ExpressionStatement.class));
+
+        // Check that the contained expression is an integer literal
+        ExpressionStatement exprStmt = (ExpressionStatement) program.statements.get(0);
+        Expression expr = exprStmt.expr;
+        assertThat(expr, instanceOf(IntegerLiteral.class));
+
+        // Check that the integer literal is correct
+        assertEquals(5, ((IntegerLiteral) expr).value);
+        assertEquals("5", expr.tokenLiteral());
     }
 
     private void testLetStatement(Statement stmt, String ident) {
