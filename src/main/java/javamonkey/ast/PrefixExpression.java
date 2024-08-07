@@ -23,12 +23,6 @@ public class PrefixExpression implements Expression {
     
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("(")
-          .append(this.op)
-          .append(this.right.toString())
-          .append(")");
-
-        return sb.toString();
+        return "(" + this.op + this.right.toString() + ")";
     }
 }

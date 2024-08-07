@@ -31,7 +31,7 @@ public class LetStatement implements Statement {
           .append(" = ");
 
         if (this.value != null) {
-            sb.append(this.value.toString());
+            sb.append(this.value);
         }
 
         sb.append(";");

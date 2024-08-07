@@ -27,7 +27,7 @@ public class ReturnStatement implements Statement {
           .append(" ");
 
         if (this.returnValue != null) {
-            sb.append(this.returnValue.toString());
+            sb.append(this.returnValue);
         }
 
         sb.append(";");
