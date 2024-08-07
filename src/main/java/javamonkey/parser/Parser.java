@@ -49,10 +49,10 @@ public class Parser {
         this.infixParseFns = new HashMap<>();
 
         // Register prefixes
-        this.registerPrefix(Token.IDENT, () -> { return this.parseIdentifier(); });
-        this.registerPrefix(Token.INT,   () -> { return this.parseIntegerLiteral(); });
-        this.registerPrefix(Token.BANG,  () -> { return this.parsePrefixExpression(); });
-        this.registerPrefix(Token.MINUS, () -> { return this.parsePrefixExpression(); });
+        this.registerPrefix(Token.IDENT, this::parseIdentifier);
+        this.registerPrefix(Token.INT,   this::parseIntegerLiteral);
+        this.registerPrefix(Token.BANG,  this::parsePrefixExpression);
+        this.registerPrefix(Token.MINUS, this::parsePrefixExpression);
     }
 
     /**
@@ -85,7 +85,7 @@ public class Parser {
     }
 
     /**
-     * Provides a list of errors that have occured during parsing.
+     * Provides a list of errors that have occurred during parsing.
      * 
      * @return a list containing all errors messages accumulated by the parser
      */
