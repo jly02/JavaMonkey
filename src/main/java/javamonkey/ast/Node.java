@@ -6,5 +6,5 @@ public interface Node {
      * 
      * @return the literal stored in the node token
      */
-    public String tokenLiteral();
+    String tokenLiteral();
 }
