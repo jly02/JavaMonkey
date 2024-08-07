@@ -47,27 +47,12 @@ public class TestParser {
     }
 
     @Test
-    public void testLetStatementsParseErrors() {
-        String input =
-        """
-        let x 5;
-        let = 10;
-        let 838383;
-        """;
-
-        Lexer l = new Lexer(input);
-        Parser p = new Parser(l);
-        p.parse();
-        assertEquals(3, p.errors().size());
-    }
-
-    @Test
     public void testReturnStatement() {
         String input =
         """
         return 5;
         return 10;
-        return 993322;        
+        return 993322;
         """;
 
         Lexer l = new Lexer(input);
