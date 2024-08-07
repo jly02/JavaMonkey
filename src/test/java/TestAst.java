@@ -11,10 +11,10 @@ import javamonkey.token.Token;
 public class TestAst {
     @Test
     public void testString() {
-        Program prog = new Program();
+        Program program = new Program();
 
         // AST for `let myVar = anotherVar;`
-        prog.statements = List.of(
+        program.statements = List.of(
             new LetStatement(
                 new Token(Token.LET, "let"), 
                 new Identifier(
@@ -28,6 +28,6 @@ public class TestAst {
             )
         );
 
-        assertEquals("let myVar = anotherVar;", prog.toString());
+        assertEquals("let myVar = anotherVar;", program.toString());
     }
 }
