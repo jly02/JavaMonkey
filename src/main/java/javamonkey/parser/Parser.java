@@ -185,7 +185,7 @@ public class Parser {
         long val;
         try {
             val = Long.parseLong(this.curToken.literal);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             String msg = "Could not parse <" + this.curToken.literal + "> as integer";
             this.errors.add(msg);
             return null;
