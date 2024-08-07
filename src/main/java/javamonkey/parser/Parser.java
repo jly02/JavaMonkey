@@ -64,7 +64,7 @@ public class Parser {
     }
 
     /**
-     * Parse an the input string defined by the lexer in this object.
+     * Parse the input string defined by the lexer in this object.
      * 
      * @return an AST root Program, the parsed program
      */
