@@ -37,3 +37,6 @@ buildNumber.properties
 
 # User specific VS Code settings
 .vscode
+
+# User specific IntelliJ settings
+.idea
