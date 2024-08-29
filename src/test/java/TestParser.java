@@ -5,17 +5,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+
+import javamonkey.ast.*;
 import org.junit.Test;
 
-import javamonkey.ast.Expression;
-import javamonkey.ast.ExpressionStatement;
-import javamonkey.ast.Identifier;
-import javamonkey.ast.IntegerLiteral;
-import javamonkey.ast.LetStatement;
-import javamonkey.ast.PrefixExpression;
-import javamonkey.ast.Program;
-import javamonkey.ast.ReturnStatement;
-import javamonkey.ast.Statement;
 import javamonkey.lexer.Lexer;
 import javamonkey.parser.Parser;
 
@@ -150,6 +143,45 @@ public class TestParser {
         }
     }
 
+    @Test
+    public void testInfixExpression() {
+        InfixTest[] tests = {
+                new InfixTest("5 + 5;", 5, 5, "+"),
+                new InfixTest("5 - 5;", 5, 5, "-"),
+                new InfixTest("5 * 5;", 5, 5, "*"),
+                new InfixTest("5 / 5;", 5, 5, "/"),
+                new InfixTest("5 > 5;", 5, 5, ">"),
+                new InfixTest("5 < 5;", 5, 5, "<"),
+                new InfixTest("5 == 5;", 5, 5, "=="),
+                new InfixTest("5 != 5;", 5, 5, "!=")
+        };
+
+        for (InfixTest test : tests) {
+            Lexer l = new Lexer(test.input);
+            Parser p = new Parser(l);
+            Program program = p.parse();
+            checkParserErrors(p);
+
+            // Check basic properties are met.
+            assertNotNull(program);
+            assertEquals(1, program.statements.size());
+
+            // Check node is an ExpressionStatement
+            assertThat(program.statements.get(0), instanceOf(ExpressionStatement.class));
+
+            // Check that the contained expression is a prefix expression
+            ExpressionStatement exprStmt = (ExpressionStatement) program.statements.get(0);
+            Expression expr = exprStmt.expr;
+            assertThat(expr, instanceOf(InfixExpression.class));
+
+            // Check that the integer literal is correct
+            InfixExpression ie = (InfixExpression) expr;
+            assertEquals(test.op, ie.op);
+            testIntegerLiteral(ie.left, test.lValue);
+            testIntegerLiteral(ie.right, test.rValue);
+        }
+    }
+
     private void testLetStatement(Statement stmt, String ident) {
         assertEquals("s is not 'let', got " + stmt.tokenLiteral(), stmt.tokenLiteral(), "let");
 
@@ -194,6 +226,21 @@ public class TestParser {
             this.input = input;
             this.op = op;
             this.value = value;
+        }
+    }
+
+    // Helper class for organizing infix expression tests
+    private static class InfixTest {
+        public String input;
+        public int lValue;
+        public int rValue;
+        public String op;
+
+        public InfixTest(String input, int lValue, int rValue, String op) {
+            this.input = input;
+            this.lValue = lValue;
+            this.rValue = rValue;
+            this.op = op;
         }
     }
 }

@@ -5,15 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javamonkey.ast.Expression;
-import javamonkey.ast.ExpressionStatement;
-import javamonkey.ast.Identifier;
-import javamonkey.ast.IntegerLiteral;
-import javamonkey.ast.LetStatement;
-import javamonkey.ast.PrefixExpression;
-import javamonkey.ast.Program;
-import javamonkey.ast.ReturnStatement;
-import javamonkey.ast.Statement;
+import javamonkey.ast.*;
 import javamonkey.lexer.Lexer;
 import javamonkey.token.Token;
 
@@ -26,6 +18,18 @@ public class Parser {
     public static final int PROD   = 5; // *
     public static final int PREFIX = 6; // -x or !x
     public static final int CALL   = 7; // foo(x)
+
+    // Precedence map: Token (String) -> Precedence (int)
+    public static final Map<String, Integer> PRECEDENCES = Map.ofEntries(
+            Map.entry(Token.EQ,  EQUALS),
+            Map.entry(Token.NOT_EQ, EQUALS),
+            Map.entry(Token.LT, LTGT),
+            Map.entry(Token.GT, LTGT),
+            Map.entry(Token.PLUS, SUM),
+            Map.entry(Token.MINUS, SUM),
+            Map.entry(Token.ASTERISK, PROD),
+            Map.entry(Token.SLASH, PROD)
+    );
 
     // Class fields
     public Lexer l;
@@ -53,6 +57,16 @@ public class Parser {
         this.registerPrefix(Token.INT,   this::parseIntegerLiteral);
         this.registerPrefix(Token.BANG,  this::parsePrefixExpression);
         this.registerPrefix(Token.MINUS, this::parsePrefixExpression);
+
+        // Register infix operators
+        this.registerInfix(Token.PLUS, this::parseInfixExpression);
+        this.registerInfix(Token.MINUS, this::parseInfixExpression);
+        this.registerInfix(Token.SLASH, this::parseInfixExpression);
+        this.registerInfix(Token.ASTERISK, this::parseInfixExpression);
+        this.registerInfix(Token.EQ, this::parseInfixExpression);
+        this.registerInfix(Token.NOT_EQ, this::parseInfixExpression);
+        this.registerInfix(Token.LT, this::parseInfixExpression);
+        this.registerInfix(Token.GT, this::parseInfixExpression);
     }
 
     /**
@@ -165,6 +179,7 @@ public class Parser {
 
     // Helper method to parse expressions.
     private Expression parseExpression(int precedence) {
+        System.err.println(this.curToken.literal + " TYPE: " + this.curToken.type);
         PrefixParseFn prefix = this.prefixParseFns.getOrDefault(this.curToken.type, null);
         if (prefix == null) {
             this.noPrefixParseFnError(this.curToken.type);
@@ -172,6 +187,20 @@ public class Parser {
         }
 
         Expression leftExpr = prefix.parse();
+
+        System.err.println(peekPrecedence());
+        System.err.println(!this.peekTokenIs(Token.SEMICOLON) && precedence < peekPrecedence());
+
+        while (!this.peekTokenIs(Token.SEMICOLON) && precedence < peekPrecedence()) {
+            InfixParseFn infix = this.infixParseFns.getOrDefault(this.curToken.type, null);
+            if (infix == null) {
+                return leftExpr;
+            }
+
+            this.nextToken();
+            leftExpr = infix.parse(leftExpr);
+        }
+
         return leftExpr;
     }
 
@@ -203,6 +232,16 @@ public class Parser {
             tempToken.literal, 
             this.parseExpression(PREFIX)
         );
+        return expr;
+    }
+
+    // Helper method for parsing infix expressions
+    private Expression parseInfixExpression(Expression left) {
+        InfixExpression expr = new InfixExpression(this.curToken, this.curToken.literal, left, null);
+        int precedence = this.curPrecedence();
+        this.nextToken();
+        expr.right = this.parseExpression(precedence);
+
         return expr;
     }
 
@@ -238,6 +277,16 @@ public class Parser {
     // Helper method for registering an infix token parser entry.
     private void registerInfix(String tokenType, InfixParseFn fn) {
         this.infixParseFns.put(tokenType, fn);
+    }
+
+    // Helper method that gets the precedence of the next token
+    private int peekPrecedence() {
+        return PRECEDENCES.getOrDefault(this.peekToken.type, LOWEST);
+    }
+
+    // Helper method that gets the precedence of the current token
+    private int curPrecedence() {
+        return PRECEDENCES.getOrDefault(this.curToken.type, LOWEST);
     }
 }
 
